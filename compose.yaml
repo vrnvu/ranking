@@ -1,0 +1,17 @@
+version: '3.9'
+services:
+  dynamodb:
+    container_name: dynamodb
+    image: amazon/dynamodb-local
+    ports:
+      - "8000:8000"
+
+  aws-localstack:
+    hostname: aws
+    container_name: aws-ranking-localstack
+    image: localstack/localstack
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=sqs,dynamodb
+      - DYNAMODB_SHARE_DB=1
