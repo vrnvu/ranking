@@ -30,9 +30,10 @@ public class DynamoDbStorageTest {
 
     @BeforeAll
     void setup() {
-        TableSchema<VoteDynamoDb> ticketDocumentSchema = TableSchema.fromBean(VoteDynamoDb.class);
-        DynamoDbAsyncTable<VoteDynamoDb> table =
-                dynamoDbEnhancedAsyncClient.table(VoteDynamoDb.VOTE_TABLE_NAME, ticketDocumentSchema);
+        DynamoDbAsyncTable<VoteDynamoDb> table = dynamoDbEnhancedAsyncClient.table(
+                VoteDynamoDb.VOTE_TABLE_NAME,
+                TableSchema.fromBean(VoteDynamoDb.class)
+        );
         table.createTable();
         dynamoDbStorage = new DynamoDbStorage(cbFactory, table);
     }
