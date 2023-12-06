@@ -38,7 +38,7 @@ jobs:
       run: docker-compose -f "compose.yaml" down
 
     - name: Tag build
-      uses: butlerlogic/action-autotag@stable
+      uses: butlerlogic/action-autotag@1.1.2
       if: success()
       env:
         GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
