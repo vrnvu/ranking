@@ -1,0 +1,37 @@
+spring:
+  main:
+    web-application-type: reactive
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics
+      base-path: "/"
+  endpoint:
+    health:
+      show-details: ALWAYS
+  metrics:
+    web:
+      client:
+        request:
+          autotime:
+            enabled: false
+  statsd:
+    metrics:
+      export:
+        enabled: true
+        port: 8125
+        flavor: datadog
+  tracing:
+    sampling:
+      probability: 1.0
+    baggage:
+      remote-fields:
+        - "x-request-id"
+      correlation:
+        fields:
+          - "x-request-id"
+        enabled: true
+    propagation:
+      type: b3
