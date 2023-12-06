@@ -19,7 +19,7 @@ public class DynamoDbStorage implements Storage {
     }
 
     @Override
-    public Mono<Void> vote(String user) {
+    public Mono<Void> vote(String user, int skill, int toxic) {
         VoteDynamoDb voteDynamoDb = new VoteDynamoDb();
         voteDynamoDb.setUser(user);
 

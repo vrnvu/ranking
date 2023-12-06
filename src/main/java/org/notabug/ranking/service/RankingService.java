@@ -18,7 +18,11 @@ public class RankingService {
   }
 
   public Mono<Void> vote(@Valid VoteInDTO voteInDTO) {
-    return storage.vote(voteInDTO.user());
+    return storage.vote(
+            voteInDTO.user(),
+            voteInDTO.skill(),
+            voteInDTO.toxic()
+    );
   }
 
   public Flux<VoteOut> getAll() {
