@@ -43,14 +43,11 @@ public class DynamoDbStorageTest {
         dynamoDbStorage = new DynamoDbStorage(cbFactory, table);
     }
 
-    @AfterEach
-    void recreateTable() {
-        table.deleteTable();
-        table.createTable();
-    }
-
     @Test
     public void whenGetAllThenOneVote() {
+        table.deleteTable();
+        table.createTable();
+
         StepVerifier.create(dynamoDbStorage.vote("user", 1, 1))
                 .verifyComplete();
 
@@ -62,6 +59,9 @@ public class DynamoDbStorageTest {
 
     @Test
     public void whenGetAllThenTwoVotes() {
+        table.deleteTable();
+        table.createTable();
+
         StepVerifier.create(dynamoDbStorage.vote("a", 1, 1))
                 .expectComplete()
                 .verify();
