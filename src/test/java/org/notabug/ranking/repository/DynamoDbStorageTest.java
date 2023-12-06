@@ -2,10 +2,7 @@ package org.notabug.ranking.repository;
 
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import io.github.resilience4j.timelimiter.TimeLimiterRegistry;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.notabug.ranking.model.VoteDynamoDb;
 import org.notabug.ranking.model.VoteOut;
 import org.springframework.cloud.circuitbreaker.resilience4j.ReactiveResilience4JCircuitBreakerFactory;
@@ -52,16 +49,14 @@ public class DynamoDbStorageTest {
         dynamoDbStorage = new DynamoDbStorage(cbFactory, table);
     }
 
-    @AfterEach
-    void recreate() {
-        table.deleteTable();
-        table.createTable();
+    @BeforeEach
+    void deleteAllItemsFromTable() {
+        table.scan().items().map(table::deleteItem);
     }
 
     @Test
     public void whenGetAllThenOneVote() {
         StepVerifier.create(dynamoDbStorage.vote("user", 1, 1))
-                .expectNext()
                 .verifyComplete();
 
         StepVerifier.create(dynamoDbStorage.getAll())

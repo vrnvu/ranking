@@ -4,12 +4,14 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.notabug.ranking.TestConfig;
 import org.notabug.ranking.wiremockcustomizers.WiremockStub;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -24,6 +26,7 @@ import static org.notabug.ranking.wiremockcustomizers.documentation.WiremockSnip
 @ActiveProfiles("test")
 @AutoConfigureRestDocs
 @AutoConfigureObservability
+@Import({TestConfig.class})
 public class RankingControllerTest {
 
   @Autowired
