@@ -47,14 +47,6 @@ public class DynamoDbStorageTest {
         table.createTable();
     }
 
-
-    @Test
-    public void whenPutUserThenSuccess() {
-        StepVerifier.create(dynamoDbStorage.vote("user", 1, 1))
-                .expectComplete()
-                .verify();
-    }
-
     @Test
     public void whenGetAllThenOneVote() {
         StepVerifier.create(dynamoDbStorage.vote("user", 1, 1))
@@ -70,18 +62,18 @@ public class DynamoDbStorageTest {
 
     @Test
     public void whenGetAllThenTwoVotes() {
-        StepVerifier.create(dynamoDbStorage.vote("user", 1, 1))
+        StepVerifier.create(dynamoDbStorage.vote("a", 1, 1))
                 .expectComplete()
                 .verify();
 
-        StepVerifier.create(dynamoDbStorage.vote("user", 1, 1))
+        StepVerifier.create(dynamoDbStorage.vote("b", 2, 2))
                 .expectComplete()
                 .verify();
 
 
         StepVerifier.create(dynamoDbStorage.getAll())
-                .expectNext(new VoteOut("user", 1, 1))
-                .expectNext(new VoteOut("user", 1, 1))
+                .expectNext(new VoteOut("a", 1, 1))
+                .expectNext(new VoteOut("b", 2, 2))
                 .expectComplete()
                 .verify();
     }
