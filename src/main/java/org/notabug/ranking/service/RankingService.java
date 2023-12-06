@@ -18,7 +18,7 @@ public class RankingService {
   }
 
   public Mono<Void> vote(@Valid VoteInDTO voteInDTO) {
-    return storage.increment(voteInDTO.user());
+    return storage.vote(voteInDTO.user());
   }
 
   public Flux<VoteOut> getAll() {

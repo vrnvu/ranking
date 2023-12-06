@@ -37,7 +37,7 @@ public class DynamoDbStorageTest {
 
   @Test
   public void whenPutUserThenSuccess() {
-    StepVerifier.create(dynamoDbStorage.increment("user"))
+    StepVerifier.create(dynamoDbStorage.vote("user"))
         .expectComplete()
         .verify();
   }

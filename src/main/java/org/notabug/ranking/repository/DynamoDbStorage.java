@@ -8,37 +8,30 @@ import reactor.core.publisher.Mono;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbAsyncTable;
 
 public class DynamoDbStorage implements Storage {
-  private final ReactiveCircuitBreakerFactory<?, ?> cbFactory;
-  private final DynamoDbAsyncTable<VoteDynamoDb> table;
+    private final ReactiveCircuitBreakerFactory<?, ?> cbFactory;
+    private final DynamoDbAsyncTable<VoteDynamoDb> table;
 
-  public DynamoDbStorage(
-      ReactiveCircuitBreakerFactory<?, ?> cbFactory,
-      DynamoDbAsyncTable<VoteDynamoDb> table) {
-    this.cbFactory = cbFactory;
-    this.table = table;
-  }
+    public DynamoDbStorage(
+            ReactiveCircuitBreakerFactory<?, ?> cbFactory,
+            DynamoDbAsyncTable<VoteDynamoDb> table) {
+        this.cbFactory = cbFactory;
+        this.table = table;
+    }
 
-  @Override public Mono<Void> increment(String user) {
-    VoteDynamoDb voteDynamoDb = new VoteDynamoDb();
-    voteDynamoDb.setUser(user);
+    @Override
+    public Mono<Void> vote(String user) {
+        VoteDynamoDb voteDynamoDb = new VoteDynamoDb();
+        voteDynamoDb.setUser(user);
 
-    return cbFactory.create("Ranking_Increment")
-        .run(Mono.fromFuture(table.updateItem(voteDynamoDb)))
-        .then();
-  }
+        return cbFactory.create("Ranking_Vote")
+                .run(Mono.fromFuture(table.putItem(voteDynamoDb)))
+                .then();
+    }
 
-  public Mono<Void> decrement(String user) {
-    VoteDynamoDb voteDynamoDb = new VoteDynamoDb();
-    voteDynamoDb.setUser(user);
-
-    return cbFactory.create("Ranking_Decrement")
-        .run(Mono.fromFuture(table.updateItem(voteDynamoDb)))
-        .then();
-  }
-
-  @Override public Flux<VoteOut> getAll() {
-    return cbFactory.create("Ranking_GetAll")
-        .run(Flux.from(table.scan().items()))
-        .map(VoteOut::from);
-  }
+    @Override
+    public Flux<VoteOut> getAll() {
+        return cbFactory.create("Ranking_GetAll")
+                .run(Flux.from(table.scan().items()))
+                .map(VoteOut::from);
+    }
 }

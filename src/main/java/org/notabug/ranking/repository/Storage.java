@@ -6,7 +6,7 @@ import reactor.core.publisher.Mono;
 
 public interface Storage {
 
-  Mono<Void> increment(String user);
+  Mono<Void> vote(String user);
 
   Flux<VoteOut> getAll();
 }
