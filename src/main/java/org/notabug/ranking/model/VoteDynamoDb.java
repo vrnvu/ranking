@@ -1,56 +1,74 @@
 package org.notabug.ranking.model;
 
-import java.util.Objects;
-import software.amazon.awssdk.enhanced.dynamodb.extensions.annotations.DynamoDbAtomicCounter;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttribute;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
 
 @DynamoDbBean
 public class VoteDynamoDb {
-  public static final String VOTE_TABLE_NAME = "ranking_votes";
-  public static final String USER_ATTRIBUTE = "user";
-  public static final String VOTES_ATTRIBUTE = "votes";
+    public static final String VOTE_TABLE_NAME = "ranking_votes";
+    public static final String USER_ATTRIBUTE = "user";
+    public static final String SKILL_ATTRIBUTE = "skill";
+    public static final String TOXIC_ATTRIBUTE = "toxic";
 
-  private String user;
-  private int votes;
+    private String user;
+    private int skill;
+    private int toxic;
 
-  public VoteDynamoDb() {
-  }
+    public VoteDynamoDb() {
+    }
 
-  public VoteDynamoDb(String user, int votes) {
-    this.user = user;
-    this.votes = votes;
-  }
+    public VoteDynamoDb(String user, int skill, int toxic) {
+        this.user = user;
+        this.skill = skill;
+        this.toxic = toxic;
+    }
 
-  @DynamoDbPartitionKey
-  @DynamoDbAttribute(USER_ATTRIBUTE)
-  public String getUser() {
-    return user;
-  }
+    @DynamoDbPartitionKey
+    @DynamoDbAttribute(USER_ATTRIBUTE)
+    public String getUser() {
+        return user;
+    }
 
-  public void setUser(String user) {
-    this.user = user;
-  }
+    public void setUser(String user) {
+        this.user = user;
+    }
 
-  @DynamoDbAttribute(VOTES_ATTRIBUTE)
-  @DynamoDbAtomicCounter
-  public int getVotes() {
-    return votes;
-  }
+    @DynamoDbAttribute(SKILL_ATTRIBUTE)
+    public int getSkill() {
+        return skill;
+    }
 
-  public void setVotes(int votes) {
-    this.votes = votes;
-  }
+    public void setSkill(int skill) {
+        this.skill = skill;
+    }
 
-  @Override public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    VoteDynamoDb voteDynamoDb1 = (VoteDynamoDb) o;
-    return votes == voteDynamoDb1.votes && Objects.equals(user, voteDynamoDb1.user);
-  }
+    @DynamoDbAttribute(TOXIC_ATTRIBUTE)
+    public int getToxic() {
+        return toxic;
+    }
 
-  @Override public int hashCode() {
-    return Objects.hash(user, votes);
-  }
+    public void setToxic(int toxic) {
+        this.toxic = toxic;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        VoteDynamoDb that = (VoteDynamoDb) o;
+
+        if (skill != that.skill) return false;
+        if (toxic != that.toxic) return false;
+        return user.equals(that.user);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = user.hashCode();
+        result = 31 * result + skill;
+        result = 31 * result + toxic;
+        return result;
+    }
 }

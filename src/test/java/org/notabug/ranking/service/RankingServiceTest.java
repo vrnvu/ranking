@@ -22,7 +22,7 @@ class RankingServiceTest {
 
     @Test
     public void whenGetAllThen() {
-        VoteOut expected = new VoteOut("expected", 1);
+        VoteOut expected = new VoteOut("expected", 1, 1);
         Mockito.when(storage.getAll()).thenReturn(Flux.just(expected));
 
         StepVerifier
@@ -34,10 +34,10 @@ class RankingServiceTest {
 
     @Test
     public void whenVoteAdd() {
-        Mockito.when(storage.vote("user")).thenReturn(Mono.empty());
+        Mockito.when(storage.vote("user", 1, 1)).thenReturn(Mono.empty());
 
         StepVerifier
-                .create(service.vote(new VoteInDTO("user")))
+                .create(service.vote(new VoteInDTO("user", 1, 1)))
                 .expectComplete()
                 .verify();
     }

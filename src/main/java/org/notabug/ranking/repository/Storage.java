@@ -6,7 +6,7 @@ import reactor.core.publisher.Mono;
 
 public interface Storage {
 
-  Mono<Void> vote(String user);
+  Mono<Void> vote(String user, int skill, int toxic);
 
   Flux<VoteOut> getAll();
 }

@@ -22,32 +22,35 @@ import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class DynamoDbStorageTest {
 
-  @Autowired DynamoDbEnhancedAsyncClient dynamoDbEnhancedAsyncClient;
-  @Autowired ReactiveCircuitBreakerFactory<?, ?> cbFactory;
-  DynamoDbStorage dynamoDbStorage;
+    @Autowired
+    DynamoDbEnhancedAsyncClient dynamoDbEnhancedAsyncClient;
+    @Autowired
+    ReactiveCircuitBreakerFactory<?, ?> cbFactory;
+    DynamoDbStorage dynamoDbStorage;
 
-  @BeforeAll
-  void setup() {
-    TableSchema<VoteDynamoDb> ticketDocumentSchema = TableSchema.fromBean(VoteDynamoDb.class);
-    DynamoDbAsyncTable<VoteDynamoDb> table =
-        dynamoDbEnhancedAsyncClient.table(VoteDynamoDb.VOTE_TABLE_NAME, ticketDocumentSchema);
-    table.createTable();
-    dynamoDbStorage = new DynamoDbStorage(cbFactory, table);
-  }
+    @BeforeAll
+    void setup() {
+        DynamoDbAsyncTable<VoteDynamoDb> table = dynamoDbEnhancedAsyncClient.table(
+                VoteDynamoDb.VOTE_TABLE_NAME,
+                TableSchema.fromBean(VoteDynamoDb.class)
+        );
+        table.createTable();
+        dynamoDbStorage = new DynamoDbStorage(cbFactory, table);
+    }
 
-  @Test
-  public void whenPutUserThenSuccess() {
-    StepVerifier.create(dynamoDbStorage.vote("user"))
-        .expectComplete()
-        .verify();
-  }
+    @Test
+    public void whenPutUserThenSuccess() {
+        StepVerifier.create(dynamoDbStorage.vote("user", 1, 1))
+                .expectComplete()
+                .verify();
+    }
 
-  @Test
-  // TODO stateless
-  public void whenGetAllThenOneVote() {
-    StepVerifier.create(dynamoDbStorage.getAll())
-        .expectNext(new VoteOut("user", 0))
-        .expectComplete()
-        .verify();
-  }
+    @Test
+    // TODO stateless
+    public void whenGetAllThenOneVote() {
+        StepVerifier.create(dynamoDbStorage.getAll())
+                .expectNext(new VoteOut("user", 1, 1))
+                .expectComplete()
+                .verify();
+    }
 }

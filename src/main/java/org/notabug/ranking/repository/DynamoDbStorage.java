@@ -19,9 +19,8 @@ public class DynamoDbStorage implements Storage {
     }
 
     @Override
-    public Mono<Void> vote(String user) {
-        VoteDynamoDb voteDynamoDb = new VoteDynamoDb();
-        voteDynamoDb.setUser(user);
+    public Mono<Void> vote(String user, int skill, int toxic) {
+        VoteDynamoDb voteDynamoDb = new VoteDynamoDb(user, skill, toxic);
 
         return cbFactory.create("Ranking_Vote")
                 .run(Mono.fromFuture(table.putItem(voteDynamoDb)))
