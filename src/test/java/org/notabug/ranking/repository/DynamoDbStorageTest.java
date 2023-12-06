@@ -10,7 +10,6 @@ import org.notabug.ranking.model.VoteDynamoDb;
 import org.notabug.ranking.model.VoteOut;
 import org.springframework.cloud.circuitbreaker.resilience4j.ReactiveResilience4JCircuitBreakerFactory;
 import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreakerFactory;
-import org.springframework.test.context.ActiveProfiles;
 import reactor.test.StepVerifier;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
@@ -62,6 +61,7 @@ public class DynamoDbStorageTest {
     @Test
     public void whenGetAllThenOneVote() {
         StepVerifier.create(dynamoDbStorage.vote("user", 1, 1))
+                .expectNext()
                 .verifyComplete();
 
         StepVerifier.create(dynamoDbStorage.getAll())
@@ -73,12 +73,10 @@ public class DynamoDbStorageTest {
     @Test
     public void whenGetAllThenTwoVotes() {
         StepVerifier.create(dynamoDbStorage.vote("a", 1, 1))
-                .expectComplete()
-                .verify();
+                .verifyComplete();
 
         StepVerifier.create(dynamoDbStorage.vote("b", 2, 2))
-                .expectComplete()
-                .verify();
+                .verifyComplete();
 
         List<VoteOut> pendingItems = List.of(
                 new VoteOut("a", 1, 1),
