@@ -1,5 +1,6 @@
 package org.notabug.ranking.repository;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -16,6 +17,8 @@ import software.amazon.awssdk.enhanced.dynamodb.DynamoDbAsyncTable;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 
+import java.util.List;
+
 @SpringBootTest
 @ActiveProfiles("test")
 @Import(TestConfig.class)
@@ -26,11 +29,13 @@ public class DynamoDbStorageTest {
     DynamoDbEnhancedAsyncClient dynamoDbEnhancedAsyncClient;
     @Autowired
     ReactiveCircuitBreakerFactory<?, ?> cbFactory;
+
+    DynamoDbAsyncTable<VoteDynamoDb> table;
     DynamoDbStorage dynamoDbStorage;
 
     @BeforeAll
     void setup() {
-        DynamoDbAsyncTable<VoteDynamoDb> table = dynamoDbEnhancedAsyncClient.table(
+        table = dynamoDbEnhancedAsyncClient.table(
                 VoteDynamoDb.VOTE_TABLE_NAME,
                 TableSchema.fromBean(VoteDynamoDb.class)
         );
@@ -38,19 +43,41 @@ public class DynamoDbStorageTest {
         dynamoDbStorage = new DynamoDbStorage(cbFactory, table);
     }
 
-    @Test
-    public void whenPutUserThenSuccess() {
-        StepVerifier.create(dynamoDbStorage.vote("user", 1, 1))
-                .expectComplete()
-                .verify();
+    @AfterEach
+    void recreateTable() {
+        table.deleteTable();
+        table.createTable();
     }
 
     @Test
-    // TODO stateless
     public void whenGetAllThenOneVote() {
+        StepVerifier.create(dynamoDbStorage.vote("user", 1, 1))
+                .verifyComplete();
+
         StepVerifier.create(dynamoDbStorage.getAll())
                 .expectNext(new VoteOut("user", 1, 1))
+                .verifyComplete();
+    }
+
+
+    @Test
+    public void whenGetAllThenTwoVotes() {
+        StepVerifier.create(dynamoDbStorage.vote("a", 1, 1))
                 .expectComplete()
                 .verify();
+
+        StepVerifier.create(dynamoDbStorage.vote("b", 2, 2))
+                .expectComplete()
+                .verify();
+
+        List<VoteOut> pendingItems = List.of(
+                new VoteOut("a", 1, 1),
+                new VoteOut("b", 2, 2)
+        );
+
+        StepVerifier.create(dynamoDbStorage.getAll())
+                .expectNextCount(pendingItems.size())
+                .thenConsumeWhile(pendingItems::contains)
+                .verifyComplete();
     }
 }
