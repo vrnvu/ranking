@@ -1,6 +1,7 @@
 package org.notabug.ranking;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability;
@@ -20,6 +21,7 @@ import static org.notabug.ranking.wiremockcustomizers.documentation.WiremockSnip
 @ActiveProfiles("test")
 @AutoConfigureRestDocs
 @AutoConfigureObservability
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ApplicationTest {
 
   @Autowired

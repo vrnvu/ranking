@@ -2,6 +2,7 @@ package org.notabug.ranking.controller;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.notabug.ranking.wiremockcustomizers.WiremockStub;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import static org.notabug.ranking.wiremockcustomizers.documentation.WiremockSnip
 @ActiveProfiles("test")
 @AutoConfigureRestDocs
 @AutoConfigureObservability
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class RankingControllerTest {
 
   @Autowired
