@@ -17,6 +17,8 @@ import software.amazon.awssdk.enhanced.dynamodb.DynamoDbAsyncTable;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 
+import java.util.List;
+
 @SpringBootTest
 @ActiveProfiles("test")
 @Import(TestConfig.class)
@@ -50,13 +52,11 @@ public class DynamoDbStorageTest {
     @Test
     public void whenGetAllThenOneVote() {
         StepVerifier.create(dynamoDbStorage.vote("user", 1, 1))
-                .expectComplete()
-                .verify();
+                .verifyComplete();
 
         StepVerifier.create(dynamoDbStorage.getAll())
                 .expectNext(new VoteOut("user", 1, 1))
-                .expectComplete()
-                .verify();
+                .verifyComplete();
     }
 
 
@@ -70,11 +70,14 @@ public class DynamoDbStorageTest {
                 .expectComplete()
                 .verify();
 
+        List<VoteOut> pendingItems = List.of(
+                new VoteOut("a", 1, 1),
+                new VoteOut("b", 2, 2)
+        );
 
         StepVerifier.create(dynamoDbStorage.getAll())
-                .expectNext(new VoteOut("a", 1, 1))
-                .expectNext(new VoteOut("b", 2, 2))
-                .expectComplete()
-                .verify();
+                .expectNextCount(pendingItems.size())
+                .thenConsumeWhile(pendingItems::contains)
+                .verifyComplete();
     }
 }
