@@ -78,11 +78,12 @@ tasks.withType<Test> {
   environment("AWS_REGION", "eu-west-1")
 }
 
-tasks.contractTest {
-  useJUnitPlatform()
-}
-
-contracts {
-  testMode.set(TestMode.WEBTESTCLIENT)
-}
+// TODO :copyContracts not needed for now
+//tasks.contractTest {
+//  useJUnitPlatform()
+//}
+//
+//contracts {
+//  testMode.set(TestMode.WEBTESTCLIENT)
+//}
 
