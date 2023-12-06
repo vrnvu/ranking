@@ -18,6 +18,7 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 
 import java.net.URI;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class DynamoDbStorageTest {
@@ -45,13 +46,13 @@ public class DynamoDbStorageTest {
                 VoteDynamoDb.VOTE_TABLE_NAME,
                 TableSchema.fromBean(VoteDynamoDb.class)
         );
-        table.createTable();
+        CompletableFuture.runAsync(() -> table.createTable());
         dynamoDbStorage = new DynamoDbStorage(cbFactory, table);
     }
 
     @BeforeEach
     void deleteAllItemsFromTable() {
-        table.scan().items().map(table::deleteItem);
+        CompletableFuture.runAsync(() -> table.scan().items().map(table::deleteItem));
     }
 
     @Test
