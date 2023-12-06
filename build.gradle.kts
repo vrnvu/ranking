@@ -7,7 +7,7 @@ plugins {
   id("io.spring.dependency-management") version "1.1.4"
   id("com.adarshr.test-logger") version "3.2.0"
   id("com.epages.restdocs-api-spec") version "0.19.0"
-  id("org.springframework.cloud.contract") version "4.0.4"
+//  id("org.springframework.cloud.contract") version "4.0.4"
 }
 
 group = "org.notabug"
