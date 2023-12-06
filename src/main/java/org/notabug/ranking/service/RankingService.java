@@ -24,4 +24,13 @@ public class RankingService {
   public Flux<VoteOut> getAll() {
     return storage.getAll();
   }
+
+  public void noTestCoverage() {
+    for (int i = 0; i <99; i++) {
+      while (true) {
+        System.out.println("foo");
+      }
+    }
+  }
+
 }
