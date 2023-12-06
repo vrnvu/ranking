@@ -23,7 +23,7 @@ jobs:
 
     steps:
     - name: Start containers
-      run: docker-compose -f "compose.yaml" up -d --build
+      run: docker-compose -f "./ranking/compose.yaml" up -d --build
       
     - uses: actions/checkout@v3
     - name: Set up JDK 21
@@ -39,4 +39,4 @@ jobs:
         
     - name: Stop containers
       if: always()
-      run: docker-compose -f "compose.yaml" down
+      run: docker-compose -f "./ranking/compose.yaml" down
