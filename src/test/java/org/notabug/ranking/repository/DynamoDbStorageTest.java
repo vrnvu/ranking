@@ -1,34 +1,45 @@
 package org.notabug.ranking.repository;
 
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
+import io.github.resilience4j.timelimiter.TimeLimiterRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.notabug.ranking.TestConfig;
 import org.notabug.ranking.model.VoteDynamoDb;
 import org.notabug.ranking.model.VoteOut;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.circuitbreaker.resilience4j.ReactiveResilience4JCircuitBreakerFactory;
 import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreakerFactory;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import reactor.test.StepVerifier;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbAsyncTable;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 
+import java.net.URI;
 import java.util.List;
 
-@SpringBootTest
 @ActiveProfiles("test")
-@Import(TestConfig.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class DynamoDbStorageTest {
 
-    @Autowired
-    DynamoDbEnhancedAsyncClient dynamoDbEnhancedAsyncClient;
-    @Autowired
-    ReactiveCircuitBreakerFactory<?, ?> cbFactory;
+    DynamoDbEnhancedAsyncClient dynamoDbEnhancedAsyncClient =
+            DynamoDbEnhancedAsyncClient.builder()
+                    .dynamoDbClient(DynamoDbAsyncClient.builder()
+                            .region(Region.EU_WEST_1)
+                            .endpointOverride(URI.create("http://localhost:8000"))
+                            .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create("foo", "bar")))
+                            .build())
+                    .build();
+
+    ReactiveCircuitBreakerFactory<?, ?> cbFactory = new ReactiveResilience4JCircuitBreakerFactory(
+            CircuitBreakerRegistry.ofDefaults(),
+            TimeLimiterRegistry.ofDefaults()
+    );
 
     DynamoDbAsyncTable<VoteDynamoDb> table;
     DynamoDbStorage dynamoDbStorage;
@@ -43,11 +54,14 @@ public class DynamoDbStorageTest {
         dynamoDbStorage = new DynamoDbStorage(cbFactory, table);
     }
 
-    @Test
-    public void whenGetAllThenOneVote() {
+    @AfterEach
+    void recreate() {
         table.deleteTable();
         table.createTable();
+    }
 
+    @Test
+    public void whenGetAllThenOneVote() {
         StepVerifier.create(dynamoDbStorage.vote("user", 1, 1))
                 .verifyComplete();
 
@@ -59,9 +73,6 @@ public class DynamoDbStorageTest {
 
     @Test
     public void whenGetAllThenTwoVotes() {
-        table.deleteTable();
-        table.createTable();
-
         StepVerifier.create(dynamoDbStorage.vote("a", 1, 1))
                 .expectComplete()
                 .verify();
