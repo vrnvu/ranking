@@ -23,7 +23,6 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 import java.net.URI;
 import java.util.List;
 
-@ActiveProfiles("test")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class DynamoDbStorageTest {
 
