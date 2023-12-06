@@ -37,7 +37,7 @@ class RankingServiceTest {
         Mockito.when(storage.vote("user")).thenReturn(Mono.empty());
 
         StepVerifier
-                .create(service.vote(new VoteInDTO("user")))
+                .create(service.vote(new VoteInDTO("user", 1, 1)))
                 .expectComplete()
                 .verify();
     }
