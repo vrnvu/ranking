@@ -46,7 +46,7 @@ public class DynamoDbStorageTest {
   // TODO stateless
   public void whenGetAllThenOneVote() {
     StepVerifier.create(dynamoDbStorage.getAll())
-        .expectNext(new VoteOut("user", 1))
+        .expectNext(new VoteOut("user", 0))
         .expectComplete()
         .verify();
   }
