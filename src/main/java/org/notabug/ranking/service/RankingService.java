@@ -27,9 +27,7 @@ public class RankingService {
 
   public void noTestCoverage() {
     for (int i = 0; i <99; i++) {
-      while (true) {
-        System.out.println("foo");
-      }
+
     }
   }
 
