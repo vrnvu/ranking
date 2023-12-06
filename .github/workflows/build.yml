@@ -36,3 +36,9 @@ jobs:
     - name: Stop containers
       if: always()
       run: docker-compose -f "compose.yaml" down
+
+    - name: Tag build
+      uses: butlerlogic/action-autotag@stable
+      if: success()
+      env:
+        GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
