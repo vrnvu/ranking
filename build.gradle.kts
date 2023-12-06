@@ -2,6 +2,7 @@ import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension
 
 plugins {
     java
+    jacoco
     id("org.springframework.boot") version "3.2.0"
     id("io.spring.dependency-management") version "1.1.4"
 // TODO copyContract not implemented
@@ -71,12 +72,21 @@ dependencyManagement {
     }
 }
 
+tasks.withType<JacocoReport> {
+    reports {
+        xml.required.set(true)
+        html.required.set(false)
+    }
+}
+
 tasks.withType<Test> {
     useJUnitPlatform()
     environment("AWS_ACCESS_KEY_ID", "foo")
     environment("AWS_SECRET_ACCESS_KEY", "bar")
     environment("AWS_REGION", "eu-west-1")
+    finalizedBy(tasks.jacocoTestReport)
 }
+
 
 // TODO :copyContracts not needed for now
 //tasks.contractTest {
