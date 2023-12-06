@@ -36,7 +36,7 @@ public class TestConfig {
 
   @Bean
   public RestDocsWebTestClientConfigurationCustomizer restDocsWebTestClientConfigurationCustomizer() {
-    return configurer -> configurer.snippets()
+    return configure -> configure.snippets()
         .withDefaults(new DoNothingSnippet())
         .and()
         .operationPreprocessors()

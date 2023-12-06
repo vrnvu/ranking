@@ -24,7 +24,6 @@ import static org.notabug.ranking.wiremockcustomizers.documentation.WiremockSnip
 @ActiveProfiles("test")
 @AutoConfigureRestDocs
 @AutoConfigureObservability
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class RankingControllerTest {
 
   @Autowired
